@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Quantum Blokzincir Laboratuvarı — İP 01–12</title>
+  <link rel="stylesheet" href="./style.css" />
+</head>
+<body>
+  <div class="app-shell">
+    <header class="topbar">
+      <div class="brand">
+        <span class="brand-badge">QUANTUM LAB</span>
+        <h1>Blokzincir Laboratuvarı</h1>
+        <p class="subtitle">İP 01–12 Kavram Rehberi & Yerel Cüzdan Oluşturucu</p>
+      </div>
+
+      <div class="topbar-controls">
+        <label class="switch-wrap" title="Her kriptografik adımda detaylı açıklama ve güvenlik notlarını açar">
+          <input type="checkbox" id="edu-mode-toggle" checked />
+          <span class="switch-slider"></span>
+          <span class="switch-label">Eğitici Mod</span>
+        </label>
+      </div>
+    </header>
+
+    <nav class="tabs" role="tablist">
+      <button class="tab-btn active" data-tab="wallet" role="tab">
+        Cüzdan Laboratuvarı (İP 12)
+      </button>
+      <button class="tab-btn" data-tab="modules" role="tab">
+        Eğitim Modülleri (İP 01–12)
+      </button>
+    </nav>
+
+    <!-- SEKME 1: İP 12 CÜZDAN OLUŞTURUCU -->
+    <main id="tab-wallet" class="tab-panel active">
+      <div class="warning-banner">
+        <strong>Güvenlik & Gizlilik:</strong> Yalnızca eğitim ve test ağı (Sepolia) içindir.
+        Tüm hesaplamalar %100 tarayıcıda yerel yapılır; dış ağa, sunucuya veya konsola hiçbir gizli veri gönderilmez.
+      </div>
+
+      <div class="actions-bar">
+        <button id="btn-generate" class="btn primary">Yeni Eğitim Cüzdanı Oluştur</button>
+        <button id="btn-vector" class="btn secondary">BIP39 Resmî Test Vektörünü Doğrula</button>
+      </div>
+
+      <div id="empty-state" class="empty-state">
+        Yukarıdaki <strong>"Yeni Eğitim Cüzdanı Oluştur"</strong> butonuna basarak 128-bit CSPRNG entropiden
+        Ethereum adresine giden 7 aşamalı zinciri canlı olarak inceleyebilirsin.
+      </div>
+
+      <section id="steps-container" class="pipeline hidden"></section>
+      <section id="vector-result" class="vector-box hidden"></section>
+    </main>
+
+    <!-- SEKME 2: İP 01-12 EĞİTİM MODÜLLERİ -->
+    <section id="tab-modules" class="tab-panel hidden">
+      <div class="modules-header">
+        <p>Kategoriye göre filtrele veya bir iş paketine tıklayarak detayları aç.</p>
+        <div id="modules-filter" class="filter-bar"></div>
+      </div>
+      <div id="modules-grid" class="modules-grid"></div>
+    </section>
+  </div>
+
+  <script type="module" src="./main.js"></script>
+</body>
+</html>
