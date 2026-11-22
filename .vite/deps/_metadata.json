@@ -1,0 +1,15 @@
+{
+  "hash": "7f21c8b8",
+  "configHash": "e6c7e34c",
+  "lockfileHash": "e3b0c442",
+  "browserHash": "a5826f4b",
+  "optimized": {
+    "ethers": {
+      "src": "../../cuzdan-olusturucu/node_modules/ethers/lib.esm/index.js",
+      "file": "ethers.js",
+      "fileHash": "930b10c8",
+      "needsInterop": false
+    }
+  },
+  "chunks": {}
+}
