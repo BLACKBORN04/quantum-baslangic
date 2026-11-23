@@ -3,101 +3,537 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Etkinlik Kayıt - Sepolia DApp</title>
+  <title>Quantum Blokzincir • Etkinlik DApp</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500;600&family=Space+Grotesk:wght@600;700&display=swap" rel="stylesheet">
   <style>
-    * { box-sizing: border-box; font-family: system-ui, -apple-system, sans-serif; }
-    body { background: #0f172a; color: #e2e8f0; margin: 0; padding: 24px; }
-    .container { max-width: 720px; margin: 0 auto; display: flex; flex-direction: column; gap: 16px; }
-    .card { background: #1e293b; border: 1px solid #334155; border-radius: 12px; padding: 20px; }
-    h1, h2 { margin-top: 0; }
-    h1 { font-size: 1.4rem; }
-    h2 { font-size: 1.1rem; color: #38bdf8; }
-    .row { display: flex; gap: 10px; flex-wrap: wrap; align-items: center; }
-    input {
-      flex: 1; min-width: 220px; padding: 10px 12px; border-radius: 8px;
-      border: 1px solid #475569; background: #0f172a; color: #f8fafc;
+    :root {
+      --bg: #050811;
+      --surface: rgba(15, 23, 42, 0.65);
+      --surface-solid: #0f172a;
+      --border: rgba(148, 163, 184, 0.14);
+      --border-glow: rgba(56, 189, 248, 0.35);
+      --text: #f1f5f9;
+      --muted: #94a3b8;
+      --accent: #38bdf8;
+      --accent-2: #818cf8;
+      --success: #10b981;
+      --danger: #f43f5e;
+      --warning: #f59e0b;
     }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      background-color: var(--bg);
+      color: var(--text);
+      font-family: 'Inter', system-ui, sans-serif;
+      min-height: 100vh;
+      overflow-x: hidden;
+      position: relative;
+      padding: 28px 16px 60px;
+    }
+
+    /* Arka plan ızgara ve neon ışık efektleri */
+    body::before {
+      content: "";
+      position: fixed;
+      inset: 0;
+      background-image:
+        linear-gradient(rgba(148, 163, 184, 0.04) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(148, 163, 184, 0.04) 1px, transparent 1px);
+      background-size: 36px 36px;
+      pointer-events: none;
+      z-index: -2;
+    }
+
+    .orb {
+      position: fixed;
+      border-radius: 50%;
+      filter: blur(110px);
+      opacity: 0.28;
+      pointer-events: none;
+      z-index: -1;
+    }
+    .orb-1 { width: 420px; height: 420px; background: #0ea5e9; top: -120px; left: -100px; }
+    .orb-2 { width: 380px; height: 380px; background: #6366f1; bottom: -100px; right: -80px; }
+
+    .container {
+      max-width: 860px;
+      margin: 0 auto;
+      display: flex;
+      flex-direction: column;
+      gap: 20px;
+    }
+
+    /* Üst Bar */
+    .navbar {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 14px;
+      padding: 14px 20px;
+      background: var(--surface);
+      backdrop-filter: blur(16px);
+      border: 1px solid var(--border);
+      border-radius: 16px;
+    }
+
+    .brand {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .brand-icon {
+      width: 38px;
+      height: 38px;
+      border-radius: 10px;
+      background: linear-gradient(135deg, #0ea5e9, #6366f1);
+      display: grid;
+      place-items: center;
+      font-family: 'Space Grotesk', sans-serif;
+      font-weight: 700;
+      font-size: 1.1rem;
+      box-shadow: 0 0 20px rgba(56, 189, 248, 0.35);
+    }
+
+    .brand h1 {
+      font-family: 'Space Grotesk', sans-serif;
+      font-size: 1.15rem;
+      letter-spacing: -0.02em;
+    }
+
+    .brand span {
+      display: block;
+      font-size: 0.75rem;
+      color: var(--muted);
+      font-family: 'JetBrains Mono', monospace;
+    }
+
+    .wallet-area {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      flex-wrap: wrap;
+    }
+
+    .pill {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      padding: 7px 12px;
+      border-radius: 999px;
+      background: rgba(15, 23, 42, 0.9);
+      border: 1px solid var(--border);
+      font-size: 0.8rem;
+      font-family: 'JetBrains Mono', monospace;
+      color: var(--muted);
+    }
+
+    .dot {
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      background: var(--muted);
+    }
+    .dot.ok { background: var(--success); box-shadow: 0 0 10px var(--success); }
+    .dot.err { background: var(--danger); box-shadow: 0 0 10px var(--danger); }
+
+    /* Butonlar */
     button {
-      padding: 10px 16px; border: none; border-radius: 8px; cursor: pointer;
-      background: #2563eb; color: #fff; font-weight: 600;
+      font-family: 'Inter', sans-serif;
+      font-weight: 600;
+      font-size: 0.88rem;
+      padding: 10px 18px;
+      border-radius: 10px;
+      border: none;
+      cursor: pointer;
+      transition: all 0.2s ease;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
     }
-    button:hover { background: #1d4ed8; }
-    button:disabled { background: #475569; cursor: not-allowed; }
-    .btn-warn { background: #d97706; }
-    .btn-warn:hover { background: #b45309; }
+
+    .btn-primary {
+      background: linear-gradient(135deg, #0ea5e9, #6366f1);
+      color: #fff;
+      box-shadow: 0 4px 18px rgba(56, 189, 248, 0.25);
+    }
+    .btn-primary:hover:not(:disabled) {
+      transform: translateY(-1px);
+      box-shadow: 0 6px 24px rgba(99, 102, 241, 0.4);
+    }
+
+    .btn-secondary {
+      background: rgba(56, 189, 248, 0.12);
+      color: var(--accent);
+      border: 1px solid rgba(56, 189, 248, 0.3);
+    }
+    .btn-secondary:hover:not(:disabled) {
+      background: rgba(56, 189, 248, 0.2);
+    }
+
+    .btn-warn {
+      background: var(--warning);
+      color: #0f172a;
+    }
+
+    button:disabled {
+      opacity: 0.45;
+      cursor: not-allowed;
+      transform: none !important;
+      box-shadow: none !important;
+    }
+
+    /* Yanlış Ağ Uyarı Bandı */
     .alert {
-      padding: 12px; border-radius: 8px; background: #7f1d1d; border: 1px solid #ef4444;
-      color: #fecaca; display: none; align-items: center; justify-content: space-between; gap: 12px;
+      display: none;
+      align-items: center;
+      justify-content: space-between;
+      flex-wrap: wrap;
+      gap: 12px;
+      padding: 14px 18px;
+      border-radius: 14px;
+      background: rgba(244, 63, 94, 0.12);
+      border: 1px solid rgba(244, 63, 94, 0.4);
+      color: #fecdd3;
+      font-size: 0.9rem;
     }
-    .status {
-      padding: 12px; border-radius: 8px; background: #0f172a; border: 1px solid #334155;
-      font-size: 0.92rem; word-break: break-all;
+
+    /* Kartlar */
+    .card {
+      background: var(--surface);
+      backdrop-filter: blur(16px);
+      border: 1px solid var(--border);
+      border-radius: 18px;
+      padding: 22px;
+      transition: border-color 0.25s ease;
     }
-    .grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 12px; }
-    .stat { background: #0f172a; padding: 12px; border-radius: 8px; border: 1px solid #334155; }
-    .stat small { color: #94a3b8; display: block; margin-bottom: 4px; }
-    .stat strong { font-size: 1.05rem; }
-    .note { font-size: 0.85rem; color: #94a3b8; margin-top: 8px; }
+    .card:hover { border-color: rgba(148, 163, 184, 0.25); }
+
+    .card-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 16px;
+      gap: 10px;
+      flex-wrap: wrap;
+    }
+
+    .card-title {
+      font-family: 'Space Grotesk', sans-serif;
+      font-size: 1.05rem;
+      color: #fff;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .badge {
+      font-size: 0.72rem;
+      font-family: 'JetBrains Mono', monospace;
+      padding: 4px 10px;
+      border-radius: 999px;
+      background: rgba(148, 163, 184, 0.12);
+      color: var(--muted);
+      border: 1px solid var(--border);
+    }
+    .badge.ok { background: rgba(16, 185, 129, 0.14); color: #34d399; border-color: rgba(16, 185, 129, 0.35); }
+    .badge.accent { background: rgba(56, 189, 248, 0.14); color: #38bdf8; border-color: rgba(56, 189, 248, 0.35); }
+
+    /* Etkinlik Hero Alanı */
+    .event-title {
+      font-family: 'Space Grotesk', sans-serif;
+      font-size: 1.65rem;
+      font-weight: 700;
+      background: linear-gradient(90deg, #ffffff, #38bdf8);
+      -webkit-background-clip: text;
+      background-clip: text;
+      -webkit-text-fill-color: transparent;
+      margin-bottom: 16px;
+    }
+
+    .stats-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(170px, 1fr));
+      gap: 12px;
+      margin-bottom: 16px;
+    }
+
+    .stat-box {
+      background: rgba(5, 8, 17, 0.55);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 14px;
+    }
+
+    .stat-box label {
+      display: block;
+      font-size: 0.75rem;
+      color: var(--muted);
+      margin-bottom: 6px;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+    }
+
+    .stat-box strong {
+      font-family: 'Space Grotesk', sans-serif;
+      font-size: 1.25rem;
+      color: #fff;
+    }
+
+    /* Kapasite İlerleme Çubuğu */
+    .progress-wrap {
+      margin-top: 8px;
+    }
+    .progress-label {
+      display: flex;
+      justify-content: space-between;
+      font-size: 0.8rem;
+      color: var(--muted);
+      margin-bottom: 6px;
+    }
+    .progress-track {
+      width: 100%;
+      height: 8px;
+      border-radius: 999px;
+      background: rgba(148, 163, 184, 0.14);
+      overflow: hidden;
+    }
+    .progress-fill {
+      height: 100%;
+      width: 0%;
+      border-radius: 999px;
+      background: linear-gradient(90deg, #0ea5e9, #818cf8);
+      transition: width 0.5s cubic-bezier(0.22, 1, 0.36, 1);
+    }
+
+    /* İki Sütunlu İşlem Panelleri */
+    .two-col {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(340px, 1fr));
+      gap: 20px;
+    }
+
+    .input-group {
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+    }
+
+    input {
+      width: 100%;
+      padding: 12px 14px;
+      border-radius: 10px;
+      border: 1px solid var(--border);
+      background: rgba(5, 8, 17, 0.7);
+      color: #fff;
+      font-size: 0.92rem;
+      font-family: 'Inter', sans-serif;
+      outline: none;
+      transition: border-color 0.2s ease, box-shadow 0.2s ease;
+    }
+    input:focus {
+      border-color: var(--accent);
+      box-shadow: 0 0 0 3px rgba(56, 189, 248, 0.15);
+    }
+    input.mono { font-family: 'JetBrains Mono', monospace; font-size: 0.84rem; }
+
+    .status-list {
+      margin-top: 16px;
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+    .status-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 10px 12px;
+      border-radius: 10px;
+      background: rgba(5, 8, 17, 0.45);
+      border: 1px solid var(--border);
+      font-size: 0.85rem;
+    }
+    .status-row span { color: var(--muted); }
+
+    .note {
+      margin-top: 12px;
+      font-size: 0.78rem;
+      line-height: 1.5;
+      color: var(--muted);
+    }
+    code {
+      font-family: 'JetBrains Mono', monospace;
+      color: var(--accent);
+      background: rgba(56, 189, 248, 0.1);
+      padding: 2px 5px;
+      border-radius: 4px;
+    }
+
+    /* Alt Terminal / İşlem Durum Çubuğu */
+    .terminal {
+      background: rgba(5, 8, 17, 0.85);
+      border: 1px solid var(--border);
+      border-radius: 14px;
+      padding: 14px 18px;
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.82rem;
+      color: #cbd5e1;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+      flex-wrap: wrap;
+    }
+    .terminal a {
+      color: var(--accent);
+      text-decoration: none;
+      border-bottom: 1px dashed var(--accent);
+    }
+    .terminal a:hover { color: #7dd3fc; }
+
+    .mono-small {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.78rem;
+      color: var(--muted);
+      word-break: break-all;
+    }
+
+    /* Yükleme animasyonu */
+    .spinner {
+      width: 14px;
+      height: 14px;
+      border: 2px solid rgba(255,255,255,0.3);
+      border-top-color: #fff;
+      border-radius: 50%;
+      animation: spin 0.7s linear infinite;
+      display: inline-block;
+    }
+    @keyframes spin { to { transform: rotate(360deg); } }
   </style>
 </head>
 <body>
+  <div class="orb orb-1"></div>
+  <div class="orb orb-2"></div>
+
   <div class="container">
-    <!-- Cüzdan Bağlantısı -->
-    <div class="card">
-      <div class="row" style="justify-content: space-between;">
-        <h1>Etkinlik Kayıt Arayüzü (Sepolia)</h1>
-        <button id="btnConnect">Cüzdan Bağla</button>
+    <!-- Üst Gezinme Çubuğu -->
+    <header class="navbar">
+      <div class="brand">
+        <div class="brand-icon">Q</div>
+        <div>
+          <h1>Quantum Etkinlik</h1>
+          <span>SEPOLIA TESTNET DAPP</span>
+        </div>
       </div>
-      <p class="note">Bağlı Adres: <strong id="walletAddress">Bağlı değil</strong></p>
-      <p class="note">Ağ: <strong id="networkName">-</strong></p>
 
-      <!-- Yanlış Ağ Uyarısı -->
-      <div id="networkAlert" class="alert">
-        <span>Yanlış ağdasınız! İşlem yapabilmek için lütfen <strong>Sepolia</strong> test ağına geçin.</span>
-        <button id="btnSwitchSepolia" class="btn-warn">Sepolia'ya Geç</button>
+      <div class="wallet-area">
+        <div class="pill" id="networkPill">
+          <span class="dot" id="networkDot"></span>
+          <span id="networkName">Bağlı değil</span>
+        </div>
+        <button id="btnConnect" class="btn-primary">Cüzdan Bağla</button>
       </div>
+    </header>
+
+    <!-- Yanlış Ağ Uyarısı -->
+    <div id="networkAlert" class="alert">
+      <span>Yanlış ağdasınız! Kayıt ve giriş işlemleri engellendi; lütfen <strong>Sepolia</strong> test ağına geçin.</span>
+      <button id="btnSwitchSepolia" class="btn-warn">Sepolia'ya Geç</button>
     </div>
 
-    <!-- Etkinlik Bilgileri -->
-    <div class="card">
-      <h2>Etkinlik Bilgileri</h2>
-      <div class="grid">
-        <div class="stat"><small>Etkinlik Adı</small><strong id="eventName">-</strong></div>
-        <div class="stat"><small>Kapasite</small><strong id="eventCapacity">-</strong></div>
-        <div class="stat"><small>Toplam Kayıt</small><strong id="totalRegistrations">-</strong></div>
+    <!-- Etkinlik Özet Kartı -->
+    <section class="card">
+      <div class="card-header">
+        <span class="badge accent">AKILLI SÖZLEŞME CANLI VERİSİ</span>
+        <span class="mono-small" id="contractLinkWrap"></span>
       </div>
-      <p class="note">Sözleşme Görevlisi: <span id="officerAddress">-</span></p>
+
+      <div class="event-title" id="eventName">Cüzdan bağlandığında yüklenecek...</div>
+
+      <div class="stats-grid">
+        <div class="stat-box">
+          <label>Toplam Kayıt</label>
+          <strong id="totalRegistrations">-</strong>
+        </div>
+        <div class="stat-box">
+          <label>Maksimum Kapasite</label>
+          <strong id="eventCapacity">-</strong>
+        </div>
+        <div class="stat-box">
+          <label>Bağlı Cüzdan</label>
+          <strong id="walletShort" style="font-family: 'JetBrains Mono', monospace; font-size: 1rem;">Bağlı değil</strong>
+        </div>
+      </div>
+
+      <div class="progress-wrap">
+        <div class="progress-label">
+          <span>Kontenjan Doluluk Oranı</span>
+          <span id="capacityPercent">0%</span>
+        </div>
+        <div class="progress-track">
+          <div class="progress-fill" id="capacityBar"></div>
+        </div>
+      </div>
+
+      <p class="note">Sözleşme Görevlisi: <code id="officerAddress">-</code></p>
+    </section>
+
+    <!-- Katılımcı & Görevli Panelleri -->
+    <div class="two-col">
+      <!-- Katılımcı Paneli -->
+      <section class="card">
+        <div class="card-header">
+          <h2 class="card-title">Katılımcı Kaydı</h2>
+          <span class="badge" id="myRegBadge">Bekleniyor</span>
+        </div>
+
+        <div class="input-group">
+          <input id="inputNickname" type="text" placeholder="Takma adınız (ör. ogrenci_1)" />
+          <button id="btnRegister" class="btn-primary" disabled>Kayıt Ol</button>
+        </div>
+
+        <div class="status-list">
+          <div class="status-row">
+            <span>Kayıtlı Takma Ad</span>
+            <strong id="myNickname">-</strong>
+          </div>
+          <div class="status-row">
+            <span>Etkinlik Giriş Durumu</span>
+            <span class="badge" id="myEntryBadge">-</span>
+          </div>
+        </div>
+      </section>
+
+      <!-- Görevli Paneli -->
+      <section class="card">
+        <div class="card-header">
+          <h2 class="card-title">Görevli Onay Paneli</h2>
+          <span class="badge" id="officerBadge">Yetki Kontrolü</span>
+        </div>
+
+        <div class="input-group">
+          <input id="inputParticipant" class="mono" type="text" placeholder="Katılımcı adresi (0x...)" />
+          <button id="btnApproveEntry" class="btn-secondary" disabled>Girişi Onayla</button>
+        </div>
+
+        <p class="note">
+          Yetki kontrolü zincir üstünde <code>sadeceGorevli</code> modifier'ı ile yapılır.
+          Arayüz tek güvenlik katmanı değildir; görevli olmayan hesaplar işlem gönderse bile sözleşme tarafından reddedilir.
+        </p>
+      </section>
     </div>
 
-    <!-- Katılımcı Paneli -->
-    <div class="card">
-      <h2>Katılımcı Kayıt ve Durum</h2>
-      <div class="row">
-        <input id="inputNickname" type="text" placeholder="Takma adınız (ör. ogrenci_1)" />
-        <button id="btnRegister" disabled>Kayıt Ol</button>
-      </div>
-      <div class="grid" style="margin-top: 14px;">
-        <div class="stat"><small>Kayıt Durumum</small><strong id="myRegStatus">-</strong></div>
-        <div class="stat"><small>Kayıtlı Takma Adım</small><strong id="myNickname">-</strong></div>
-        <div class="stat"><small>Giriş Durumum</small><strong id="myEntryStatus">-</strong></div>
-      </div>
-    </div>
-
-    <!-- Görevli Paneli -->
-    <div class="card">
-      <h2>Görevli Paneli</h2>
-      <div class="row">
-        <input id="inputParticipant" type="text" placeholder="Katılımcı cüzdan adresi (0x...)" />
-        <button id="btnApproveEntry" disabled>Girişi Onayla</button>
-      </div>
-      <p class="note">
-        Not: Yetki kontrolü akıllı sözleşmedeki <code>sadeceGorevli</code> modifier'ı ile zincir üstünde yapılır.
-        Görevli olmayan bir hesap bu düğmeye bassa bile işlem sözleşme tarafından reddedilir.
-      </p>
-    </div>
-
-    <!-- İşlem Mesajları -->
-    <div class="status" id="statusBox">Durum: MetaMask cüzdanınızı bağlayın.</div>
+    <!-- Alt İşlem Durum Çubuğu -->
+    <footer class="terminal">
+      <span id="statusText">&gt; Sistem hazır. Başlamak için MetaMask cüzdanınızı bağlayın.</span>
+      <span id="txLinkWrap"></span>
+    </footer>
   </div>
 
   <!-- Ethers.js v6 CDN -->
