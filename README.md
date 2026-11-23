@@ -20,3 +20,6 @@ Bu depo, Erciyes Üniversitesi Quantum Yeni Nesil Teknoloji Kulübü Blokzincir 
 - [ ] **İP 14 – İP 15:** Test ETH ve USDC İşlemleri
 - [ ] **İP 16 – İP 19:** Takım Sözleşmesi Deneyleri ve Kopya Deploy/Verify
 - [ ] **İP 20 – İP 25:** Etkinlik Sözleşmesi ve Web Uygulaması
+
+## Remix ve Etherscan Aynı Ağdaki Sözleşmelere Nasıl İşlem Gönderir?
+Remix ve Etherscan, akıllı sözleşmelerin barındırıldığı yerler değil; blokzincir ağıyla etkileşim kurmayı sağlayan birer **arayüzdür (frontend)**. İkisi de sözleşmenin **adresi** ve **ABI** bilgisini kullanarak çağrılacak fonksiyonun verisini (calldata) hazırlar, ardından bağlı cüzdandan (MetaMask) bu işlemi imzalamasını ister. MetaMask imzalanan işlemi RPC üzerinden doğrudan Sepolia ağına ilettiği için, işlemi ister Remix'ten ister Etherscan'den gönderin, sonuç aynı blokzincirdeki aynı sözleşme üzerinde işlenir.
