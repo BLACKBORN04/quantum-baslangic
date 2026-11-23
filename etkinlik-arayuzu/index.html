@@ -1,0 +1,108 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Etkinlik Kayıt - Sepolia DApp</title>
+  <style>
+    * { box-sizing: border-box; font-family: system-ui, -apple-system, sans-serif; }
+    body { background: #0f172a; color: #e2e8f0; margin: 0; padding: 24px; }
+    .container { max-width: 720px; margin: 0 auto; display: flex; flex-direction: column; gap: 16px; }
+    .card { background: #1e293b; border: 1px solid #334155; border-radius: 12px; padding: 20px; }
+    h1, h2 { margin-top: 0; }
+    h1 { font-size: 1.4rem; }
+    h2 { font-size: 1.1rem; color: #38bdf8; }
+    .row { display: flex; gap: 10px; flex-wrap: wrap; align-items: center; }
+    input {
+      flex: 1; min-width: 220px; padding: 10px 12px; border-radius: 8px;
+      border: 1px solid #475569; background: #0f172a; color: #f8fafc;
+    }
+    button {
+      padding: 10px 16px; border: none; border-radius: 8px; cursor: pointer;
+      background: #2563eb; color: #fff; font-weight: 600;
+    }
+    button:hover { background: #1d4ed8; }
+    button:disabled { background: #475569; cursor: not-allowed; }
+    .btn-warn { background: #d97706; }
+    .btn-warn:hover { background: #b45309; }
+    .alert {
+      padding: 12px; border-radius: 8px; background: #7f1d1d; border: 1px solid #ef4444;
+      color: #fecaca; display: none; align-items: center; justify-content: space-between; gap: 12px;
+    }
+    .status {
+      padding: 12px; border-radius: 8px; background: #0f172a; border: 1px solid #334155;
+      font-size: 0.92rem; word-break: break-all;
+    }
+    .grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 12px; }
+    .stat { background: #0f172a; padding: 12px; border-radius: 8px; border: 1px solid #334155; }
+    .stat small { color: #94a3b8; display: block; margin-bottom: 4px; }
+    .stat strong { font-size: 1.05rem; }
+    .note { font-size: 0.85rem; color: #94a3b8; margin-top: 8px; }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <!-- Cüzdan Bağlantısı -->
+    <div class="card">
+      <div class="row" style="justify-content: space-between;">
+        <h1>Etkinlik Kayıt Arayüzü (Sepolia)</h1>
+        <button id="btnConnect">Cüzdan Bağla</button>
+      </div>
+      <p class="note">Bağlı Adres: <strong id="walletAddress">Bağlı değil</strong></p>
+      <p class="note">Ağ: <strong id="networkName">-</strong></p>
+
+      <!-- Yanlış Ağ Uyarısı -->
+      <div id="networkAlert" class="alert">
+        <span>Yanlış ağdasınız! İşlem yapabilmek için lütfen <strong>Sepolia</strong> test ağına geçin.</span>
+        <button id="btnSwitchSepolia" class="btn-warn">Sepolia'ya Geç</button>
+      </div>
+    </div>
+
+    <!-- Etkinlik Bilgileri -->
+    <div class="card">
+      <h2>Etkinlik Bilgileri</h2>
+      <div class="grid">
+        <div class="stat"><small>Etkinlik Adı</small><strong id="eventName">-</strong></div>
+        <div class="stat"><small>Kapasite</small><strong id="eventCapacity">-</strong></div>
+        <div class="stat"><small>Toplam Kayıt</small><strong id="totalRegistrations">-</strong></div>
+      </div>
+      <p class="note">Sözleşme Görevlisi: <span id="officerAddress">-</span></p>
+    </div>
+
+    <!-- Katılımcı Paneli -->
+    <div class="card">
+      <h2>Katılımcı Kayıt ve Durum</h2>
+      <div class="row">
+        <input id="inputNickname" type="text" placeholder="Takma adınız (ör. ogrenci_1)" />
+        <button id="btnRegister" disabled>Kayıt Ol</button>
+      </div>
+      <div class="grid" style="margin-top: 14px;">
+        <div class="stat"><small>Kayıt Durumum</small><strong id="myRegStatus">-</strong></div>
+        <div class="stat"><small>Kayıtlı Takma Adım</small><strong id="myNickname">-</strong></div>
+        <div class="stat"><small>Giriş Durumum</small><strong id="myEntryStatus">-</strong></div>
+      </div>
+    </div>
+
+    <!-- Görevli Paneli -->
+    <div class="card">
+      <h2>Görevli Paneli</h2>
+      <div class="row">
+        <input id="inputParticipant" type="text" placeholder="Katılımcı cüzdan adresi (0x...)" />
+        <button id="btnApproveEntry" disabled>Girişi Onayla</button>
+      </div>
+      <p class="note">
+        Not: Yetki kontrolü akıllı sözleşmedeki <code>sadeceGorevli</code> modifier'ı ile zincir üstünde yapılır.
+        Görevli olmayan bir hesap bu düğmeye bassa bile işlem sözleşme tarafından reddedilir.
+      </p>
+    </div>
+
+    <!-- İşlem Mesajları -->
+    <div class="status" id="statusBox">Durum: MetaMask cüzdanınızı bağlayın.</div>
+  </div>
+
+  <!-- Ethers.js v6 CDN -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/ethers/6.13.4/ethers.umd.min.js"></script>
+  <script src="./config.js"></script>
+  <script src="./app.js"></script>
+</body>
+</html>
